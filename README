@@ -1,0 +1,10 @@
+## Sistema de Gerenciamento de Quadras Esportivas
+
+Esta é uma aplicação web que permitirá cadastrar quadras, registrar jogadores e realizar reservas de horários, facilitando o gerenciamento da agenda das quadras esportivas. 
+
+#### Tecnologias Utilizadas
+Java Script
+NodeJS
+Express
+Postgre
+
