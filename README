@@ -1,10 +1,52 @@
-## Sistema de Gerenciamento de Quadras Esportivas
+# Sistema de Gerenciamento de Quadras Esportivas
 
 Esta é uma aplicação web que permitirá cadastrar quadras, registrar jogadores e realizar reservas de horários, facilitando o gerenciamento da agenda das quadras esportivas. 
 
-#### Tecnologias Utilizadas
+## Tecnologias Utilizadas
 Java Script
 NodeJS
 Express
 Postgre
 
+## Como rodar o projeto localmente
+
+Pré-requisitos:
+
+Node.js instalado
+PostgreSQL instalado e rodando localmente
+Banco de dados quadra_esportiva já criado no PostgreSQL, com as tabelas acima
+
+1. Clone o repositório e instale as dependências
+
+bash
+npm install
+
+2. Configure as variáveis de ambiente
+
+Crie um arquivo .env na raiz do projeto com sua string de conexão do PostgreSQL:
+
+DATABASE_URL="postgresql://USUARIO:SENHA@localhost:5432/quadra_esportiva"
+
+Substitua USUARIO e SENHA pelas credenciais do seu PostgreSQL local.
+
+3. Gere o Prisma Client
+
+bash
+npx prisma generate
+
+4. Rode o servidor
+
+bash
+node server.js
+
+Se tudo estiver certo, o terminal mostra:
+
+Servidor rodando em http://localhost:3000
+
+5. Teste a conexão
+
+Acesse no navegador:
+
+http://localhost:3000/teste-conexao
+
+Deve retornar um JSON com "status": "conectado" e a lista de jogadores cadastrados (vazia, se o banco ainda não tiver dados).

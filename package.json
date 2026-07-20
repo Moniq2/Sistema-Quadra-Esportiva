@@ -1,0 +1,31 @@
+{
+  "name": "sistema-quadra-esportiva",
+  "version": "1.0.0",
+  "description": "Esta é uma aplicação web que permitirá cadastrar quadras, registrar jogadores e realizar reservas de horários, facilitando o gerenciamento da agenda das quadras esportivas.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Moniq2/Sistema-Quadra-Esportiva.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Moniq2/Sistema-Quadra-Esportiva/issues"
+  },
+  "homepage": "https://github.com/Moniq2/Sistema-Quadra-Esportiva#readme",
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.9.0",
+    "@prisma/client": "^7.9.0",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "pg": "^8.22.0"
+  },
+  "devDependencies": {
+    "prisma": "^7.9.0"
+  }
+}
