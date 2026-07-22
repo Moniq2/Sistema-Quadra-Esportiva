@@ -9,10 +9,19 @@ const prisma = new PrismaClient({ adapter });
 const app = express();
 app.use(express.json());
 
+module.exports = { app, prisma };
+
+const quadraRoutes = require('./src/routes/quadraRoutes');
+app.use('/quadras', quadraRoutes);
+
 const PORT = process.env.PORT || 3000;
 
 app.get("/", (req, res) => {
   res.send("Servidor rodando!");
+});
+
+app.listen(PORT, () => {
+  console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
 
 app.get("/teste-conexao", async (req, res) => {
@@ -25,6 +34,7 @@ app.get("/teste-conexao", async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Servidor rodando em http://localhost:${PORT}`);
-});
+
+
+
+
