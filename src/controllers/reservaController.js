@@ -21,9 +21,34 @@ async function criarReserva(req, res) {
 // Lista todas as reservas
 async function listarReservas(req, res) {
   try {
-    const reservas = await reservaService.listarReservas();
+    const reservas = await reservaService.listarReservas(req.query);
 
     const reservasFormatadas = reservas.map((reserva) => ({
+      ...reserva,
+      data_reserva: reserva.data_reserva.toISOString().slice(0, 10),
+      horario_inicio: reserva.horario_inicio.toISOString().slice(11, 16),
+      horario_fim: reserva.horario_fim.toISOString().slice(11, 16),
+    }));
+
+    return res.status(200).json({
+      quantidade: reservasFormatadas.length,
+      reservas: reservasFormatadas,
+    });
+  } catch (erro) {
+    console.error("Erro ao listar reservas:", erro);
+
+    return res.status(erro.statusCode || 500).json({
+      mensagem: erro.message || "Erro interno ao listar reservas.",
+    });
+  }
+}
+
+// Busca uma reserva pelo ID
+async function buscarReservaPorId(req, res) {
+  try {
+    const reserva = await reservaService.buscarReservaPorId(req.params.id);
+
+    const reservaFormatada = {
       ...reserva,
 
       data_reserva: reserva.data_reserva
@@ -37,17 +62,89 @@ async function listarReservas(req, res) {
       horario_fim: reserva.horario_fim
         .toISOString()
         .slice(11, 16),
-    }));
+    };
 
     return res.status(200).json({
-      quantidade: reservasFormatadas.length,
-      reservas: reservasFormatadas,
+      reserva: reservaFormatada,
     });
   } catch (erro) {
-    console.error('Erro ao listar reservas:', erro);
+    console.error("Erro ao buscar reserva:", erro);
 
-    return res.status(500).json({
-      mensagem: 'Erro interno ao listar reservas.',
+    return res.status(erro.statusCode || 500).json({
+      mensagem: erro.message || "Erro interno ao buscar reserva.",
+    });
+  }
+}
+
+// Atualiza uma reserva existente
+async function atualizarReserva(req, res) {
+  try {
+    const reserva = await reservaService.atualizarReserva(
+      req.params.id,
+      req.body
+    );
+
+    const reservaFormatada = {
+      ...reserva,
+      data_reserva: reserva.data_reserva
+        .toISOString()
+        .slice(0, 10),
+
+      horario_inicio: reserva.horario_inicio
+        .toISOString()
+        .slice(11, 16),
+
+      horario_fim: reserva.horario_fim
+        .toISOString()
+        .slice(11, 16),
+    };
+
+    return res.status(200).json({
+      mensagem: "Reserva atualizada com sucesso.",
+      reserva: reservaFormatada,
+    });
+  } catch (erro) {
+    console.error("Erro ao atualizar reserva:", erro);
+
+    return res.status(erro.statusCode || 500).json({
+      mensagem:
+        erro.message || "Erro interno ao atualizar reserva.",
+    });
+  }
+}
+
+// Exclui uma reserva
+async function excluirReserva(req, res) {
+  try {
+    await reservaService.excluirReserva(req.params.id);
+
+    return res.status(200).json({
+      mensagem: "Reserva excluída com sucesso.",
+    });
+  } catch (erro) {
+    console.error("Erro ao excluir reserva:", erro);
+
+    return res.status(erro.statusCode || 500).json({
+      mensagem:
+        erro.message || "Erro interno ao excluir reserva.",
+    });
+  }
+}
+
+// Consulta a agenda de uma quadra
+async function consultarAgenda(req, res) {
+  try {
+    const agenda = await reservaService.consultarAgenda(
+      req.query.quadra_id,
+      req.query.data
+    );
+
+    return res.status(200).json(agenda);
+  } catch (erro) {
+    console.error("Erro ao consultar agenda:", erro);
+
+    return res.status(erro.statusCode || 500).json({
+      mensagem: erro.message || "Erro interno ao consultar agenda.",
     });
   }
 }
@@ -55,4 +152,8 @@ async function listarReservas(req, res) {
 module.exports = {
   criarReserva,
   listarReservas,
+  buscarReservaPorId,
+  atualizarReserva,
+  excluirReserva,
+  consultarAgenda,
 };
