@@ -52,7 +52,41 @@ async function listarReservas(req, res) {
   }
 }
 
+// Busca uma reserva pelo ID
+async function buscarReservaPorId(req, res) {
+  try {
+    const reserva = await reservaService.buscarReservaPorId(req.params.id);
+
+    const reservaFormatada = {
+      ...reserva,
+
+      data_reserva: reserva.data_reserva
+        .toISOString()
+        .slice(0, 10),
+
+      horario_inicio: reserva.horario_inicio
+        .toISOString()
+        .slice(11, 16),
+
+      horario_fim: reserva.horario_fim
+        .toISOString()
+        .slice(11, 16),
+    };
+
+    return res.status(200).json({
+      reserva: reservaFormatada,
+    });
+  } catch (erro) {
+    console.error("Erro ao buscar reserva:", erro);
+
+    return res.status(erro.statusCode || 500).json({
+      mensagem: erro.message || "Erro interno ao buscar reserva.",
+    });
+  }
+}
+
 module.exports = {
   criarReserva,
   listarReservas,
+   buscarReservaPorId,
 };

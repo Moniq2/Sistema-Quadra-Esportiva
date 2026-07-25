@@ -238,7 +238,40 @@ async function listarReservas() {
   });
 }
 
+// Busca uma reserva pelo ID
+async function buscarReservaPorId(id) {
+  const reservaId = Number(id);
+
+  if (!Number.isInteger(reservaId) || reservaId <= 0) {
+    throw criarErro("O ID da reserva é inválido.");
+  }
+
+  const reserva = await prisma.reserva.findUnique({
+    where: {
+      id: reservaId,
+    },
+
+    include: {
+      quadra: true,
+      responsavel: true,
+
+      participantes: {
+        include: {
+          jogador: true,
+        },
+      },
+    },
+  });
+
+  if (!reserva) {
+    throw criarErro("Reserva não encontrada.", 404);
+  }
+
+  return reserva;
+}
+
 module.exports = {
   criarReserva,
   listarReservas,
+  buscarReservaPorId,
 };
