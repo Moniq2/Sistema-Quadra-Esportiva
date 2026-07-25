@@ -3,6 +3,9 @@ const express = require("express");
 const { PrismaClient } = require("@prisma/client");
 const { PrismaPg } = require("@prisma/adapter-pg");
 
+// Importar rotas
+const reservaRoutes = require("./src/routes/reservaRoutes");
+
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter });
 
@@ -24,6 +27,9 @@ app.get("/teste-conexao", async (req, res) => {
     res.status(500).json({ status: "erro", mensagem: "Falha ao conectar ou consultar o banco de dados", detalhe: error.message });
   }
 });
+
+// Registrar rotas
+app.use("/reservas", reservaRoutes);
 
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
