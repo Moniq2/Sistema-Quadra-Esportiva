@@ -60,21 +60,29 @@ async function verificarConflito(
   quadraId,
   dataReserva,
   horarioInicio,
-  horarioFim
+  horarioFim,
+  reservaIdIgnorada = null
 ) {
-  return prisma.reserva.findFirst({
-    where: {
-      quadra_id: quadraId,
-      data_reserva: dataReserva,
-
-      horario_inicio: {
-        lt: horarioFim,
-      },
-
-      horario_fim: {
-        gt: horarioInicio,
-      },
+  const filtros = {
+    quadra_id: quadraId,
+    data_reserva: dataReserva,
+    horario_inicio: {
+      lt: horarioFim,
     },
+    horario_fim: {
+      gt: horarioInicio,
+    },
+  };
+
+  // Na atualização, ignora a própria reserva
+  if (reservaIdIgnorada) {
+    filtros.id = {
+      not: reservaIdIgnorada,
+    };
+  }
+
+  return prisma.reserva.findFirst({
+    where: filtros,
   });
 }
 
@@ -270,8 +278,203 @@ async function buscarReservaPorId(id) {
   return reserva;
 }
 
+// Atualiza uma reserva existente
+async function atualizarReserva(id, dados) {
+  const reservaId = Number(id);
+
+  if (!Number.isInteger(reservaId) || reservaId <= 0) {
+    throw criarErro("O ID da reserva é inválido.");
+  }
+
+  const reservaExistente = await prisma.reserva.findUnique({
+    where: {
+      id: reservaId,
+    },
+  });
+
+  if (!reservaExistente) {
+    throw criarErro("Reserva não encontrada.", 404);
+  }
+
+  const {
+    quadra_id,
+    responsavel_id,
+    data_reserva,
+    horario_inicio,
+    horario_fim,
+    jogadores_ids = [],
+  } = dados;
+
+  if (
+    !quadra_id ||
+    !responsavel_id ||
+    !data_reserva ||
+    !horario_inicio ||
+    !horario_fim
+  ) {
+    throw criarErro(
+      "Quadra, responsável, data, horário de início e horário de fim são obrigatórios."
+    );
+  }
+
+  if (!Array.isArray(jogadores_ids)) {
+    throw criarErro("O campo jogadores_ids deve ser uma lista.");
+  }
+
+  const quadraId = Number(quadra_id);
+  const responsavelId = Number(responsavel_id);
+
+  if (!Number.isInteger(quadraId) || quadraId <= 0) {
+    throw criarErro("O ID da quadra é inválido.");
+  }
+
+  if (!Number.isInteger(responsavelId) || responsavelId <= 0) {
+    throw criarErro("O ID do responsável é inválido.");
+  }
+
+  const dataReserva = converterData(data_reserva);
+  const horarioInicio = converterHorario(horario_inicio);
+  const horarioFim = converterHorario(horario_fim);
+
+  if (horarioInicio >= horarioFim) {
+    throw criarErro(
+      "O horário de fim deve ser maior que o horário de início."
+    );
+  }
+
+  const [quadra, responsavel] = await Promise.all([
+    prisma.quadra.findUnique({
+      where: {
+        id: quadraId,
+      },
+    }),
+
+    prisma.jogador.findUnique({
+      where: {
+        id: responsavelId,
+      },
+    }),
+  ]);
+
+  if (!quadra) {
+    throw criarErro("Quadra não encontrada.", 404);
+  }
+
+  if (!responsavel) {
+    throw criarErro("Jogador responsável não encontrado.", 404);
+  }
+
+  const participantesIds = organizarParticipantes(
+    jogadores_ids,
+    responsavelId
+  );
+
+  const participantesInvalidos = participantesIds.some(
+    (jogadorId) =>
+      !Number.isInteger(jogadorId) || jogadorId <= 0
+  );
+
+  if (participantesInvalidos) {
+    throw criarErro("Existe um ID de jogador inválido.");
+  }
+
+  const jogadoresEncontrados = await prisma.jogador.findMany({
+    where: {
+      id: {
+        in: participantesIds,
+      },
+    },
+  });
+
+  if (jogadoresEncontrados.length !== participantesIds.length) {
+    throw criarErro(
+      "Um ou mais jogadores participantes não foram encontrados.",
+      404
+    );
+  }
+
+  const conflito = await verificarConflito(
+    quadraId,
+    dataReserva,
+    horarioInicio,
+    horarioFim,
+    reservaId
+  );
+
+  if (conflito) {
+    throw criarErro(
+      "A quadra já possui uma reserva nesse período.",
+      409
+    );
+  }
+
+  return prisma.reserva.update({
+    where: {
+      id: reservaId,
+    },
+
+    data: {
+      quadra_id: quadraId,
+      responsavel_id: responsavelId,
+      data_reserva: dataReserva,
+      horario_inicio: horarioInicio,
+      horario_fim: horarioFim,
+
+      participantes: {
+        // Remove os participantes anteriores
+        deleteMany: {},
+
+        // Insere a nova lista de participantes
+        create: participantesIds.map((jogadorId) => ({
+          jogador_id: jogadorId,
+        })),
+      },
+    },
+
+    include: {
+      quadra: true,
+      responsavel: true,
+
+      participantes: {
+        include: {
+          jogador: true,
+        },
+      },
+    },
+  });
+}
+
+// Exclui uma reserva pelo ID
+async function excluirReserva(id) {
+  const reservaId = Number(id);
+
+  if (!Number.isInteger(reservaId) || reservaId <= 0) {
+    throw criarErro("O ID da reserva é inválido.");
+  }
+
+  const reservaExistente = await prisma.reserva.findUnique({
+    where: {
+      id: reservaId,
+    },
+  });
+
+  if (!reservaExistente) {
+    throw criarErro("Reserva não encontrada.", 404);
+  }
+
+  await prisma.reserva.delete({
+    where: {
+      id: reservaId,
+    },
+  });
+
+  return reservaExistente;
+}
+
 module.exports = {
   criarReserva,
   listarReservas,
   buscarReservaPorId,
+  atualizarReserva,
+  excluirReserva,
 };

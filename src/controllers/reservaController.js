@@ -85,8 +85,65 @@ async function buscarReservaPorId(req, res) {
   }
 }
 
+// Atualiza uma reserva existente
+async function atualizarReserva(req, res) {
+  try {
+    const reserva = await reservaService.atualizarReserva(
+      req.params.id,
+      req.body
+    );
+
+    const reservaFormatada = {
+      ...reserva,
+      data_reserva: reserva.data_reserva
+        .toISOString()
+        .slice(0, 10),
+
+      horario_inicio: reserva.horario_inicio
+        .toISOString()
+        .slice(11, 16),
+
+      horario_fim: reserva.horario_fim
+        .toISOString()
+        .slice(11, 16),
+    };
+
+    return res.status(200).json({
+      mensagem: "Reserva atualizada com sucesso.",
+      reserva: reservaFormatada,
+    });
+  } catch (erro) {
+    console.error("Erro ao atualizar reserva:", erro);
+
+    return res.status(erro.statusCode || 500).json({
+      mensagem:
+        erro.message || "Erro interno ao atualizar reserva.",
+    });
+  }
+}
+
+// Exclui uma reserva
+async function excluirReserva(req, res) {
+  try {
+    await reservaService.excluirReserva(req.params.id);
+
+    return res.status(200).json({
+      mensagem: "Reserva excluída com sucesso.",
+    });
+  } catch (erro) {
+    console.error("Erro ao excluir reserva:", erro);
+
+    return res.status(erro.statusCode || 500).json({
+      mensagem:
+        erro.message || "Erro interno ao excluir reserva.",
+    });
+  }
+}
+
 module.exports = {
   criarReserva,
   listarReservas,
    buscarReservaPorId,
+   atualizarReserva,
+   excluirReserva,
 };

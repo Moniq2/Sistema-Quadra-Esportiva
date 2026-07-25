@@ -12,4 +12,9 @@ router.get("/:id", reservaController.buscarReservaPorId);
 // Cadastra uma nova reserva
 router.post("/", reservaController.criarReserva);
 
+// Atualiza uma reserva
+router.put("/:id", reservaController.atualizarReserva);
+
+router.delete("/:id", reservaController.excluirReserva);
+
 module.exports = router;
