@@ -7,31 +7,43 @@ datasource db {
 }
 
 model jogador {
-  nome                                    String?   @db.VarChar(80)
-  id                                      Int       @id @default(autoincrement())
-  email                                   String?   @db.VarChar(80)
-  telefone                                String?   @db.VarChar(20)
-  reserva_reserva_jogador_idTojogador     reserva[] @relation("reserva_jogador_idTojogador")
-  reserva_reserva_responsavel_idTojogador reserva[] @relation("reserva_responsavel_idTojogador")
+  id       Int     @id @default(autoincrement())
+  nome     String? @db.VarChar(80)
+  email    String? @db.VarChar(80)
+  telefone String? @db.VarChar(20)
+
+  reservas_responsavel  reserva[]         @relation("ResponsavelReserva")
+  reservas_participante reserva_jogador[]
 }
 
 model quadra {
-  id          Int       @id @default(autoincrement())
-  nome        String?   @db.VarChar(60)
-  modalidade  String?   @db.VarChar(60)
-  localizacao String?   @db.VarChar(120)
-  reserva     reserva[]
+  id          Int     @id @default(autoincrement())
+  nome        String? @db.VarChar(60)
+  modalidade  String? @db.VarChar(60)
+  localizacao String? @db.VarChar(120)
+
+  reservas reserva[]
 }
 
 model reserva {
-  id                                      Int       @id @default(autoincrement())
-  quadra_id                               Int?
-  responsavel_id                          Int?
-  jogador_id                              Int?
-  data_reserva                            DateTime? @db.Date
-  horario_inicio                          DateTime? @db.Time(6)
-  horario_fim                             DateTime? @db.Time(6)
-  jogador_reserva_jogador_idTojogador     jogador?  @relation("reserva_jogador_idTojogador", fields: [jogador_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  quadra                                  quadra?   @relation(fields: [quadra_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  jogador_reserva_responsavel_idTojogador jogador?  @relation("reserva_responsavel_idTojogador", fields: [responsavel_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id             Int      @id @default(autoincrement())
+  quadra_id      Int
+  responsavel_id Int
+  data_reserva   DateTime @db.Date
+  horario_inicio DateTime @db.Time(6)
+  horario_fim    DateTime @db.Time(6)
+
+  quadra        quadra            @relation(fields: [quadra_id], references: [id], onDelete: Restrict)
+  responsavel   jogador           @relation("ResponsavelReserva", fields: [responsavel_id], references: [id], onDelete: Restrict)
+  participantes reserva_jogador[]
+}
+
+model reserva_jogador {
+  reserva_id Int
+  jogador_id Int
+
+  reserva reserva @relation(fields: [reserva_id], references: [id], onDelete: Cascade)
+  jogador jogador @relation(fields: [jogador_id], references: [id], onDelete: Cascade)
+
+  @@id([reserva_id, jogador_id])
 }
