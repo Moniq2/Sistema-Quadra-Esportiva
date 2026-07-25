@@ -3,20 +3,16 @@ const express = require("express");
 const { PrismaClient } = require("@prisma/client");
 const { PrismaPg } = require("@prisma/adapter-pg");
 
-// Importar rotas
-const reservaRoutes = require("./src/routes/reservaRoutes");
-
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter });
 
+// Importar rotas
+const jogadorRoutes = require('./src/routes/jogadorRoutes');
 const quadraRoutes = require('./src/routes/quadraRoutes');
 const reservaRoutes = require('./src/routes/reservaRoutes');
 
 const app = express();
 app.use(express.json());
-
-app.use('/quadras', quadraRoutes);
-app.use('/reservas', reservaRoutes);
 
 const PORT = process.env.PORT || 3000;
 
@@ -45,14 +41,19 @@ app.get("/teste-conexao", async (req, res) => {
 });
 
 // Registrar rotas
+app.use("/jogadores", jogadorRoutes);
+app.use("/quadras", quadraRoutes);
 app.use("/reservas", reservaRoutes);
 
-app.listen(PORT, () => {
-  console.log(`Servidor rodando em http://localhost:${PORT}`);
-});
+// Só sobe o servidor na porta se o arquivo for executado diretamente no terminal
+// Se for importado pelo Jest, ele não abre a porta e evita travamentos!
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Servidor rodando em http://localhost:${PORT}`);
+  });
+}
 
 module.exports = { app, prisma };
-
 
 
 
