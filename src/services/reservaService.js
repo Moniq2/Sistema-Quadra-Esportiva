@@ -222,14 +222,33 @@ async function criarReserva(dados) {
 }
 
 // Lista todas as reservas com quadra, responsável e participantes
-async function listarReservas() {
+// Lista as reservas e permite filtrar por quadra e data
+async function listarReservas(filtros = {}) {
+  const where = {};
+
+  if (filtros.quadra_id) {
+    const quadraId = Number(filtros.quadra_id);
+
+    if (!Number.isInteger(quadraId) || quadraId <= 0) {
+      throw criarErro("O ID da quadra é inválido.");
+    }
+
+    where.quadra_id = quadraId;
+  }
+
+  if (filtros.data) {
+    where.data_reserva = converterData(filtros.data);
+  }
+
   return prisma.reserva.findMany({
+    where,
+
     orderBy: [
       {
-        data_reserva: 'asc',
+        data_reserva: "asc",
       },
       {
-        horario_inicio: 'asc',
+        horario_inicio: "asc",
       },
     ],
 

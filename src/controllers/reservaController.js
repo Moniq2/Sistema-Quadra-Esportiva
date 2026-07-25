@@ -21,22 +21,13 @@ async function criarReserva(req, res) {
 // Lista todas as reservas
 async function listarReservas(req, res) {
   try {
-    const reservas = await reservaService.listarReservas();
+    const reservas = await reservaService.listarReservas(req.query);
 
     const reservasFormatadas = reservas.map((reserva) => ({
       ...reserva,
-
-      data_reserva: reserva.data_reserva
-        .toISOString()
-        .slice(0, 10),
-
-      horario_inicio: reserva.horario_inicio
-        .toISOString()
-        .slice(11, 16),
-
-      horario_fim: reserva.horario_fim
-        .toISOString()
-        .slice(11, 16),
+      data_reserva: reserva.data_reserva.toISOString().slice(0, 10),
+      horario_inicio: reserva.horario_inicio.toISOString().slice(11, 16),
+      horario_fim: reserva.horario_fim.toISOString().slice(11, 16),
     }));
 
     return res.status(200).json({
@@ -44,10 +35,10 @@ async function listarReservas(req, res) {
       reservas: reservasFormatadas,
     });
   } catch (erro) {
-    console.error('Erro ao listar reservas:', erro);
+    console.error("Erro ao listar reservas:", erro);
 
-    return res.status(500).json({
-      mensagem: 'Erro interno ao listar reservas.',
+    return res.status(erro.statusCode || 500).json({
+      mensagem: erro.message || "Erro interno ao listar reservas.",
     });
   }
 }
