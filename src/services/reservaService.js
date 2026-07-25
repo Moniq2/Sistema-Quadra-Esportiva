@@ -213,6 +213,32 @@ async function criarReserva(dados) {
   });
 }
 
+// Lista todas as reservas com quadra, responsável e participantes
+async function listarReservas() {
+  return prisma.reserva.findMany({
+    orderBy: [
+      {
+        data_reserva: 'asc',
+      },
+      {
+        horario_inicio: 'asc',
+      },
+    ],
+
+    include: {
+      quadra: true,
+      responsavel: true,
+
+      participantes: {
+        include: {
+          jogador: true,
+        },
+      },
+    },
+  });
+}
+
 module.exports = {
   criarReserva,
+  listarReservas,
 };

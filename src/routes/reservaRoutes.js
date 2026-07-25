@@ -3,7 +3,10 @@ const reservaController = require('../controllers/reservaController');
 
 const router = express.Router();
 
-// Cadastro de uma nova reserva
+// Lista todas as reservas
+router.get('/', reservaController.listarReservas);
+
+// Cadastra uma nova reserva
 router.post('/', reservaController.criarReserva);
 
 module.exports = router;
