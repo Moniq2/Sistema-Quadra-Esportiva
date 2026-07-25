@@ -490,10 +490,117 @@ async function excluirReserva(id) {
   return reservaExistente;
 }
 
+// Converte um horário HH:mm para minutos
+function horarioParaMinutos(horario) {
+  const [horas, minutos] = horario.split(":").map(Number);
+  return horas * 60 + minutos;
+}
+
+// Converte minutos para HH:mm
+function minutosParaHorario(totalMinutos) {
+  const horas = Math.floor(totalMinutos / 60);
+  const minutos = totalMinutos % 60;
+
+  return `${String(horas).padStart(2, "0")}:${String(minutos).padStart(2, "0")}`;
+}
+
+// Consulta a agenda de uma quadra em uma data
+async function consultarAgenda(quadraIdRecebido, dataRecebida) {
+  const quadraId = Number(quadraIdRecebido);
+
+  if (!Number.isInteger(quadraId) || quadraId <= 0) {
+    throw criarErro("O ID da quadra é inválido.");
+  }
+
+  if (!dataRecebida) {
+    throw criarErro("A data é obrigatória.");
+  }
+
+  const dataReserva = converterData(dataRecebida);
+
+  const quadra = await prisma.quadra.findUnique({
+    where: {
+      id: quadraId,
+    },
+  });
+
+  if (!quadra) {
+    throw criarErro("Quadra não encontrada.", 404);
+  }
+
+  const reservas = await prisma.reserva.findMany({
+    where: {
+      quadra_id: quadraId,
+      data_reserva: dataReserva,
+    },
+
+    orderBy: {
+      horario_inicio: "asc",
+    },
+
+    include: {
+      responsavel: true,
+    },
+  });
+
+  const inicioFuncionamento = 8 * 60;
+  const fimFuncionamento = 22 * 60;
+
+  const horariosOcupados = reservas.map((reserva) => ({
+    reserva_id: reserva.id,
+    inicio: reserva.horario_inicio.toISOString().slice(11, 16),
+    fim: reserva.horario_fim.toISOString().slice(11, 16),
+    responsavel: reserva.responsavel,
+  }));
+
+  const horariosDisponiveis = [];
+  let horarioAtual = inicioFuncionamento;
+
+  for (const reserva of reservas) {
+    const inicioReserva = horarioParaMinutos(
+      reserva.horario_inicio.toISOString().slice(11, 16)
+    );
+
+    const fimReserva = horarioParaMinutos(
+      reserva.horario_fim.toISOString().slice(11, 16)
+    );
+
+    if (inicioReserva > horarioAtual) {
+      horariosDisponiveis.push({
+        inicio: minutosParaHorario(horarioAtual),
+        fim: minutosParaHorario(inicioReserva),
+      });
+    }
+
+    if (fimReserva > horarioAtual) {
+      horarioAtual = fimReserva;
+    }
+  }
+
+  if (horarioAtual < fimFuncionamento) {
+    horariosDisponiveis.push({
+      inicio: minutosParaHorario(horarioAtual),
+      fim: minutosParaHorario(fimFuncionamento),
+    });
+  }
+
+  return {
+    quadra,
+    data: dataRecebida,
+    funcionamento: {
+      inicio: "08:00",
+      fim: "22:00",
+    },
+    horarios_ocupados: horariosOcupados,
+    horarios_disponiveis: horariosDisponiveis,
+  };
+}
+
 module.exports = {
   criarReserva,
   listarReservas,
   buscarReservaPorId,
   atualizarReserva,
   excluirReserva,
+  consultarAgenda,
 };

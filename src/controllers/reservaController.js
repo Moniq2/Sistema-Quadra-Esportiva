@@ -131,10 +131,29 @@ async function excluirReserva(req, res) {
   }
 }
 
+// Consulta a agenda de uma quadra
+async function consultarAgenda(req, res) {
+  try {
+    const agenda = await reservaService.consultarAgenda(
+      req.query.quadra_id,
+      req.query.data
+    );
+
+    return res.status(200).json(agenda);
+  } catch (erro) {
+    console.error("Erro ao consultar agenda:", erro);
+
+    return res.status(erro.statusCode || 500).json({
+      mensagem: erro.message || "Erro interno ao consultar agenda.",
+    });
+  }
+}
+
 module.exports = {
   criarReserva,
   listarReservas,
-   buscarReservaPorId,
-   atualizarReserva,
-   excluirReserva,
+  buscarReservaPorId,
+  atualizarReserva,
+  excluirReserva,
+  consultarAgenda,
 };
