@@ -4,7 +4,8 @@
   "description": "Esta é uma aplicação web que permitirá cadastrar quadras, registrar jogadores e realizar reservas de horários, facilitando o gerenciamento da agenda das quadras esportivas.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "test:watch": "jest --watchAll"
   },
   "repository": {
     "type": "git",
@@ -26,6 +27,8 @@
     "pg": "^8.22.0"
   },
   "devDependencies": {
-    "prisma": "^7.9.0"
+    "jest": "^30.4.2",
+    "prisma": "^7.9.0",
+    "supertest": "^7.2.2"
   }
 }

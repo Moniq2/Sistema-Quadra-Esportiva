@@ -1,52 +1,76 @@
+
 # Sistema de Gerenciamento de Quadras Esportivas
 
-Esta é uma aplicação web que permitirá cadastrar quadras, registrar jogadores e realizar reservas de horários, facilitando o gerenciamento da agenda das quadras esportivas. 
+Esta é uma aplicação web para o cadastro de quadras, registro de jogadores e gerenciamento de reservas de horários, criada para organizar a agenda das quadras e evitar conflitos de agendamento.
 
 ## Tecnologias Utilizadas
-Java Script
-NodeJS
-Express
-Postgre
+* JavaScript / Node.js
+* Express
+* PostgreSQL
+* Prisma ORM
+* Jest e Supertest
+
+## Pré-requisitos
+* Node.js instalado
+* PostgreSQL rodando localmente
+* Banco de dados `quadra_esportiva` criado no PostgreSQL
 
 ## Como rodar o projeto localmente
 
-Pré-requisitos:
-
-Node.js instalado
-PostgreSQL instalado e rodando localmente
-Banco de dados quadra_esportiva já criado no PostgreSQL, com as tabelas acima
-
-1. Clone o repositório e instale as dependências
-
-bash
+1. Clone o repositório e instale as dependências:
+```bash
 npm install
 
-2. Configure as variáveis de ambiente
+```
 
-Crie um arquivo .env na raiz do projeto com sua string de conexão do PostgreSQL:
+2. Configure as variáveis de ambiente:
+Crie um arquivo `.env` na raiz do projeto com a string de conexão do seu PostgreSQL:
 
+```env
 DATABASE_URL="postgresql://USUARIO:SENHA@localhost:5432/quadra_esportiva"
 
-Substitua USUARIO e SENHA pelas credenciais do seu PostgreSQL local.
+```
 
-3. Gere o Prisma Client
+Substitua `USUARIO` e `SENHA` pelas credenciais do seu banco local.
 
-bash
+3. Sincronize o banco de dados e gere o Prisma Client:
+
+```bash
+npx prisma db push
 npx prisma generate
 
-4. Rode o servidor
+```
 
-bash
+4. Rode o servidor:
+
+```bash
 node server.js
 
-Se tudo estiver certo, o terminal mostra:
+```
 
-Servidor rodando em http://localhost:3000
+Se tudo estiver certo, o terminal mostrará:
+`Servidor rodando em http://localhost:3000`
 
-5. Teste a conexão
-
+5. Teste a conexão:
 Acesse no navegador:
+`http://localhost:3000/teste-conexao`
 
-http://localhost:3000/teste-conexao
+O sistema deve retornar um JSON com `"status": "conectado"` e a lista de jogadores cadastrados.
 
-Deve retornar um JSON com "status": "conectado" e a lista de jogadores cadastrados (vazia, se o banco ainda não tiver dados).
+## Como executar os testes
+
+O projeto possui testes de integração automatizados para validar as rotas da API, as operações no banco de dados e a regra de negócio que impede o cadastro de reservas simultâneas para a mesma quadra.
+
+Para rodar todos os testes no terminal:
+
+```bash
+npm test
+
+```
+
+Para rodar os testes em modo contínuo durante o desenvolvimento:
+
+```bash
+npm run test:watch
+
+```
