@@ -1,10 +1,18 @@
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Quadras from './pages/Quadras'
+import QuadrasUsuario from './pages/QuadrasUsuario'
 
 function App() {
   return (
-    <div className="min-h-screen bg-base-200 py-8">
-      <Quadras />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        {/* Rota do Administrador */}
+        <Route path="/admin/quadras" element={<Quadras />} />
+
+        {/* Rota do Cliente/Usuário */}
+        <Route path="/quadras" element={<QuadrasUsuario />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
