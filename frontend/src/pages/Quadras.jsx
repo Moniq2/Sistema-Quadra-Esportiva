@@ -84,7 +84,7 @@ export default function Quadras() {
   })
 
   return (
-    <div className="min-h-screen bg-gray-200 w-full py-10 px-4 sm:px-6">
+    <div className="min-h-screen bg-[#F5FEFE] w-full py-8 px-4 sm:px-6">
       <div className="max-w-4xl mx-auto space-y-6">
         <h1 className="text-center font-bold text-3xl text-[#01406D]">
           Gerenciamento de Quadras
