@@ -8,6 +8,7 @@ const { PrismaPg } = require("@prisma/adapter-pg");
 const jogadorRoutes = require('./src/routes/jogadorRoutes');
 const quadraRoutes = require('./src/routes/quadraRoutes');
 const reservaRoutes = require('./src/routes/reservaRoutes');
+const loginRoutes = require("./src/routes/loginRoutes");
 
 const app = express();
 
@@ -48,6 +49,7 @@ app.get("/teste-conexao", async (req, res) => {
 app.use("/jogadores", jogadorRoutes);
 app.use("/quadras", quadraRoutes);
 app.use("/reservas", reservaRoutes);
+app.use("/login", loginRoutes);
 
 // 6. Inicialização do servidor
 if (require.main === module) {

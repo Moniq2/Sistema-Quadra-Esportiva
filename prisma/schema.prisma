@@ -6,11 +6,18 @@ datasource db {
   provider = "postgresql"
 }
 
+enum TipoUsuario {
+  JOGADOR
+  ADMIN
+}
+
 model jogador {
   id       Int     @id @default(autoincrement())
-  nome     String? @db.VarChar(80)
-  email    String? @db.VarChar(80)
-  telefone String? @db.VarChar(20)
+  nome     String @db.VarChar(80)
+  email    String @db.VarChar(80)
+  telefone String @db.VarChar(20)
+  senha    String? @db.VarChar(255)
+  tipo TipoUsuario @default(JOGADOR)
 
   reservas_responsavel  reserva[]         @relation("ResponsavelReserva")
   reservas_participante reserva_jogador[]
@@ -18,9 +25,9 @@ model jogador {
 
 model quadra {
   id          Int     @id @default(autoincrement())
-  nome        String? @db.VarChar(60)
-  modalidade  String? @db.VarChar(60)
-  localizacao String? @db.VarChar(120)
+  nome        String @db.VarChar(60)
+  modalidade  String @db.VarChar(60)
+  localizacao String @db.VarChar(120)
 
   reservas reserva[]
 }

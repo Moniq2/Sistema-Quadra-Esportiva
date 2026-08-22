@@ -6,7 +6,7 @@ const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter });
 
 async function criarJogador(dados) {
-    const { nome, email, telefone } = dados;
+    const { nome, email, telefone, senha } = dados;
 
     if (!nome || nome.trim() === "") {
         throw new Error("Nome é obrigatório.");
@@ -20,13 +20,20 @@ async function criarJogador(dados) {
         throw new Error("Telefone é obrigatório.");
     }
 
+    if (!senha || senha.trim() === "" || senha.length() < 7) {
+        throw new Error("Senha é obrigatória.");
+    }
+
+    const bcrypt = require("bcrypt");
+    const senhaHash = await bcrypt.hash(senha, 10);
     const telefoneLimpo = telefone.replace(/\D/g, "");
 
     return await prisma.jogador.create({
         data: {
             nome,
             email,
-            telefone: telefoneLimpo
+            telefone: telefoneLimpo,
+            senha: senhaHash
         }
     });
 }
@@ -84,4 +91,8 @@ module.exports = {
     atualizarJogador,
     excluirJogador
 };
+
+async function logar(email, senha) {
+    return await prisma.jogador.findFirst()
+}
 
