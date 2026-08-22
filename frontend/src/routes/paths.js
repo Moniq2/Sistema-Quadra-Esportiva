@@ -2,6 +2,7 @@ export const PATHS = {
   home: '/',
   login: '/login',
   cadastro: '/cadastro',
+  inicio: '/inicio',
   quadras: '/quadras',
   reservas: '/reservas',
   minhasReservas: '/minhas-reservas',

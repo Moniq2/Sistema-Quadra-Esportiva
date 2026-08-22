@@ -2,7 +2,9 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Footer from '../components/Footer'
 import Toast from '../components/Toast'
+import { getHomeByRole, saveAuthenticatedUser, USER_ROLES } from '../auth/authStorage'
 import { fazerLogin } from '../services/loginService'
+import { listarJogadores } from '../services/jogadorService'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -22,10 +24,28 @@ export default function Login() {
     event.preventDefault(); setLoading(true)
     try {
       const response = await fazerLogin(form)
-      localStorage.setItem('usuario', JSON.stringify(response.usuario))
-      navigate(response.usuario.tipo === 'ADMIN' ? '/admin/jogadores' : '/quadras')
+      saveAuthenticatedUser(response.usuario)
+      navigate(getHomeByRole(response.usuario.tipo), { replace: true })
     } catch (error) {
       showToast(error.response?.data?.erro || 'E-mail ou senha inválidos.', 'error')
+    } finally { setLoading(false) }
+  }
+
+  const enterDemo = async (role) => {
+    const isAdmin = role === USER_ROLES.admin
+    setLoading(true)
+    try {
+      let demoUser = { id: 1, nome: 'Administrador Teste', email: 'admin@tmj.com', tipo: role }
+      if (!isAdmin) {
+        const players = await listarJogadores()
+        const player = players[0]
+        if (!player) return showToast('Cadastre um jogador antes de usar o acesso demonstrativo.', 'error')
+        demoUser = { ...player, tipo: role }
+      }
+      saveAuthenticatedUser(demoUser)
+      navigate(getHomeByRole(role), { replace: true })
+    } catch {
+      showToast('Não foi possível acessar o perfil demonstrativo. Verifique o backend.', 'error')
     } finally { setLoading(false) }
   }
 
@@ -40,6 +60,16 @@ export default function Login() {
             <label className="form-control"><span className="label-text mb-1.5 font-semibold">Senha</span><input className="input input-bordered" type="password" autoComplete="current-password" value={form.senha} onChange={(event) => setForm({ ...form, senha: event.target.value })} required /></label>
             <button className="btn w-full border-0 bg-accent text-white hover:bg-orange-600" disabled={loading}>{loading ? <><span className="loading loading-spinner loading-sm" /> Entrando...</> : 'Entrar'}</button>
           </form>
+          {import.meta.env.DEV && (
+            <div className="mt-6 rounded-2xl border border-secondary/20 bg-secondary/5 p-4">
+              <p className="text-center text-xs font-bold uppercase tracking-wider text-secondary">Acesso de demonstração</p>
+              <p className="mt-1 text-center text-xs text-slate-500">Disponível somente durante o desenvolvimento.</p>
+              <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                <button type="button" className="btn btn-sm border-secondary bg-white text-secondary hover:border-secondary hover:bg-secondary hover:text-white" onClick={() => enterDemo(USER_ROLES.player)}>Entrar como jogador</button>
+                <button type="button" className="btn btn-sm border-primary bg-white text-primary hover:border-primary hover:bg-primary hover:text-white" onClick={() => enterDemo(USER_ROLES.admin)}>Entrar como administrador</button>
+              </div>
+            </div>
+          )}
           <p className="mt-5 text-center text-sm text-slate-500">Ainda não participa? <Link className="font-bold text-secondary hover:underline" to="/cadastro">Cadastre-se</Link></p>
         </div></div>
       </main><Footer /><Toast message={toast.message} type={toast.type} visible={toast.visible} />

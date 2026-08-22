@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { PATHS } from '../routes/paths'
 import api from '../services/api'
 
 export default function QuadrasUsuario() {
+  const navigate = useNavigate()
   const [quadras, setQuadras] = useState([])
   const [filtroModalidade, setFiltroModalidade] = useState('')
   const [filtroLocalizacao, setFiltroLocalizacao] = useState('')
@@ -63,7 +66,7 @@ export default function QuadrasUsuario() {
                 <h2 className="text-xl font-bold text-primary">{quadra.nome}</h2>
                 <p className="mt-1 text-xs text-gray-500">Local: {quadra.localizacao}</p>
               </div>
-              <button type="button" onClick={() => window.alert(`Reservar: ${quadra.nome}`)} className="btn w-full rounded-xl border-none bg-accent text-sm font-semibold text-white hover:bg-orange-600">
+              <button type="button" onClick={() => navigate(PATHS.reservas, { state: { quadraIdSelecionada: quadra.id } })} className="btn w-full rounded-xl border-none bg-accent text-sm font-semibold text-white hover:bg-orange-600">
                 Reservar quadra
               </button>
             </article>
