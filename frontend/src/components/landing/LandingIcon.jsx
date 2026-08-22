@@ -8,6 +8,9 @@ const paths = {
   ball: <><circle cx="12" cy="12" r="9"/><path d="m8.5 4.1 3.5 2.6 3.5-2.6M6.2 9.5l1.3 4.2L4.6 16M17.8 9.5l-1.3 4.2 2.9 2.3M7.5 13.7h9M10 20.8l2-3 2 3"/></>,
   arrow: <><path d="M5 12h14M13 6l6 6-6 6"/></>,
   check: <path d="m5 12 4 4L19 6"/>,
+  camera: <><path d="M14.5 4 16 7h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h3l1.5-3h5Z"/><circle cx="12" cy="13" r="3.5"/></>,
+  compass: <><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5 5-2Z"/></>,
+  building: <><path d="M4 21V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v16"/><path d="M8 7h2M13 7h1M8 11h2M13 11h1M8 15h2M13 15h1M2 21h20"/></>,
 }
 
 export default function LandingIcon({ name, className = 'h-6 w-6' }) {

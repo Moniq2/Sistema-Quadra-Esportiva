@@ -3,7 +3,7 @@ import LandingIcon from './LandingIcon'
 
 export default function CallToAction() {
   return (
-    <section className="bg-white px-4 py-20 sm:px-6" aria-labelledby="cta-title">
+    <section className="bg-[#f5fefe] px-4 py-20 sm:px-6" aria-labelledby="cta-title">
       <div className="cta-panel mx-auto max-w-7xl overflow-hidden rounded-[2.5rem] bg-primary px-6 py-16 text-center text-white sm:px-12 lg:py-20">
         <span className="cta-ring cta-ring-one" aria-hidden="true" />
         <span className="cta-ring cta-ring-two" aria-hidden="true" />

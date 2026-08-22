@@ -5,7 +5,7 @@ const sports = ['Futebol', 'Futebol de areia', 'Futsal', 'Vôlei', 'Vôlei de pr
 
 export default function SportsSection() {
   return (
-    <section className="landing-section overflow-hidden bg-white" aria-labelledby="sports-title">
+    <section className="landing-section overflow-hidden bg-[#f5fefe]" aria-labelledby="sports-title">
       <div className="landing-shell">
         <div className="section-heading">
           <p className="eyebrow">ENCONTRE SEU JOGO</p>

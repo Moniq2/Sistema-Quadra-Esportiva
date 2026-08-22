@@ -27,7 +27,7 @@ export default function HowItWorks() {
   }, [])
 
   return (
-    <section ref={sectionRef} id="como-funciona" className="how-section landing-section bg-white" aria-labelledby="how-title">
+    <section ref={sectionRef} id="como-funciona" className="how-section landing-section bg-[#f5fefe]" aria-labelledby="how-title">
       <div className={`transition-trail ${trailVisible ? 'trail-visible' : ''}`} aria-hidden="true">
         <svg viewBox="0 0 320 90" preserveAspectRatio="none">
           <path d="M8 16 C72 82 206 2 312 64" />

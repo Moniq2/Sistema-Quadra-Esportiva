@@ -2,7 +2,7 @@ const highlights = ['Mais encontros.', 'Mais movimento.', 'Mais comunidade.', 'M
 
 export default function CommunitySection() {
   return (
-    <section className="landing-section overflow-hidden bg-base-200" aria-labelledby="community-title">
+    <section className="landing-section overflow-hidden bg-white" aria-labelledby="community-title">
       <div className="landing-shell grid items-center gap-12 lg:grid-cols-[.85fr_1.15fr]">
         <div className="community-visual" aria-hidden="true">
           <span className="community-orbit community-orbit-one" />

@@ -9,7 +9,7 @@ const benefits = [
 
 export default function BenefitsSection() {
   return (
-    <section className="landing-section bg-base-200" aria-labelledby="benefits-title">
+    <section className="landing-section bg-white" aria-labelledby="benefits-title">
       <div className="landing-shell">
         <div className="section-heading section-heading-left">
           <p className="eyebrow">POR QUE USAR O TMJ?</p>

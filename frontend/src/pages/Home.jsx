@@ -7,6 +7,8 @@ import HowItWorks from '../components/landing/HowItWorks'
 import LandingHeader from '../components/landing/LandingHeader'
 import SchedulePreview from '../components/landing/SchedulePreview'
 import SportsSection from '../components/landing/SportsSection'
+import FutureSection from '../components/landing/FutureSection'
+import PricingSection from '../components/landing/PricingSection'
 import '../styles/landing.css'
 
 export default function Home() {
@@ -20,6 +22,8 @@ export default function Home() {
         <SportsSection />
         <SchedulePreview />
         <CommunitySection />
+        <FutureSection />
+        <PricingSection />
         <CallToAction />
       </main>
       <Footer />

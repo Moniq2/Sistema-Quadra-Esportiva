@@ -13,7 +13,7 @@
 .eyebrow-light { color: #72edf1; }
 
 .landing-hero { position: relative; background: radial-gradient(circle at 80% 25%, rgba(1,180,186,.18), transparent 30%), linear-gradient(135deg, #fff 0%, #f5fefe 60%, #e8fbfb 100%); }
-.landing-hero::after { content: ''; position: absolute; z-index: 4; right: -5%; bottom: -2.2rem; left: -5%; height: 5.5rem; border-radius: 50% 50% 0 0 / 100% 100% 0 0; background: #fff; box-shadow: 0 -12px 35px rgba(1,180,186,.05); pointer-events: none; }
+.landing-hero::after { content: ''; position: absolute; z-index: 4; right: -5%; bottom: -2.2rem; left: -5%; height: 5.5rem; border-radius: 50% 50% 0 0 / 100% 100% 0 0; background: #f5fefe; box-shadow: 0 -12px 35px rgba(1,180,186,.05); pointer-events: none; }
 .landing-hero .landing-shell { min-height: 660px; padding-bottom: 1.5rem; }
 .landing-hero::before { content: ''; position: absolute; inset: 0; opacity: .18; background-image: linear-gradient(rgba(1,64,109,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(1,64,109,.1) 1px, transparent 1px); background-size: 48px 48px; mask-image: linear-gradient(to right, transparent, #000); }
 .how-section { position: relative; padding-top: 5rem; }
@@ -108,7 +108,7 @@
 .court-dots { position:absolute; z-index:30; bottom:9%; left:50%; display:flex; gap:.45rem; transform:translateX(-50%); }.court-dots span{width:.45rem;height:.45rem;border-radius:99px;background:rgba(1,64,109,.22);transition:width .25s ease,background .25s ease}.court-dots span.active{width:1.4rem;background:#ff7a0f}
 
 .steps-grid { position: relative; display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; }
-.step-card { position: relative; min-height: 17rem; padding: 2rem; border: 1px solid #dbe9ee; border-radius: 1.75rem; background: #fff; transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
+.step-card { position: relative; min-height: 17rem; padding: 2rem; border: 1px solid rgba(1,64,109,.12); border-radius: 1.75rem; background: linear-gradient(145deg,#fff,#f8ffff); box-shadow: 0 12px 30px rgba(1,64,109,.06); transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
 .step-card:hover { transform: translateY(-6px); border-color: rgba(1,180,186,.5); box-shadow: 0 20px 45px rgba(1,64,109,.1); }
 .step-number { position: absolute; top: 1.2rem; right: 1.5rem; color: rgba(1,64,109,.09); font-size: 3rem; font-weight: 800; }
 .step-icon,.benefit-icon { display: grid; width: 3.25rem; height: 3.25rem; place-items: center; border-radius: 1rem; background: rgba(1,180,186,.12); color: #018e94; }
@@ -117,7 +117,7 @@
 .step-arrow { position: absolute; z-index: 2; top: 50%; right: -2.2rem; width: 2.8rem; color: #01b4ba; }
 
 .benefits-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; }
-.benefit-card { min-height: 16.5rem; padding: 1.75rem; border: 1px solid #dcebed; border-radius: 1.6rem; background: #fff; transition: transform .25s ease, box-shadow .25s ease; }
+.benefit-card { min-height: 16.5rem; padding: 1.75rem; border: 1px solid rgba(1,64,109,.12); border-radius: 1.6rem; background: #f5fefe; box-shadow: 0 10px 28px rgba(1,64,109,.055); transition: transform .25s ease, box-shadow .25s ease; }
 .benefit-card:hover { transform: translateY(-5px); box-shadow: 0 18px 35px rgba(1,64,109,.09); }
 .benefit-card-featured { border-color: transparent; background: #01b4ba; color: #fff; transform: translateY(-1rem); }
 .benefit-card-featured:hover { transform: translateY(-1.35rem); }
