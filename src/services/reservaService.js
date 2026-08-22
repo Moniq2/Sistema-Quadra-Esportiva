@@ -24,12 +24,12 @@ function converterData(data) {
     throw criarErro('A data deve estar no formato YYYY-MM-DD.');
   }
 
-  const dataConvertida = new Date(`${data}T00:00:00.000Z`);
+  // CORREÇÃO: Remover o "Z" para usar timezone local (não UTC)
+  // Sem Z: "2026-08-20T00:00:00" = 20/08 00:00 no timezone local ✅
+  // Com Z: "2026-08-20T00:00:00Z" = 19/08 21:00 no timezone local -3 ❌
+  const dataConvertida = new Date(`${data}T00:00:00`);
 
-  if (
-    Number.isNaN(dataConvertida.getTime()) ||
-    dataConvertida.toISOString().slice(0, 10) !== data
-  ) {
+  if (Number.isNaN(dataConvertida.getTime())) {
     throw criarErro('A data informada é inválida.');
   }
 
@@ -221,7 +221,6 @@ async function criarReserva(dados) {
   });
 }
 
-// Lista todas as reservas com quadra, responsável e participantes
 // Lista as reservas e permite filtrar por quadra e data
 async function listarReservas(filtros = {}) {
   const where = {};
