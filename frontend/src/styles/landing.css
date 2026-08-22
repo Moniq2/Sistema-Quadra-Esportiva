@@ -249,8 +249,9 @@
 }
 @media (max-width: 767px) {
   .landing-section { padding-block: 4.5rem; }
+  .landing-hero .landing-shell { row-gap: 0; }
   .steps-grid { grid-template-columns: 1fr; }.step-card { min-height: 0; }.step-arrow { display: none; }
-  .hero-visual { min-height: 440px; touch-action: pan-y; }.court-stage { inset: 10% 6% auto; }.court-frame { border-width: 5px; border-radius: 2rem; }.court-frame::before { inset: .7rem; border-radius: 1.4rem; }
+  .hero-visual { min-height: 440px; margin-top: -2rem; touch-action: pan-y; }.court-stage { inset: 5% 6% auto; }.court-frame { border-width: 5px; border-radius: 2rem; }.court-frame::before { inset: .7rem; border-radius: 1.4rem; }
   .scene-card { min-width: 9rem; padding: .58rem .66rem; gap:.5rem; }.scene-card strong{font-size:.68rem}.scene-card small{font-size:.58rem}.scene-card svg{width:1rem;height:1rem}.scene-card .status-dot{width:.55rem;height:.55rem;box-shadow:0 0 0 4px rgba(1,180,186,.13)}
   .messages-court-1 .scene-card-available,.messages-court-2 .scene-card-available,.messages-court-3 .scene-card-available,.messages-court-4 .scene-card-available{top:-10%;right:0;bottom:auto;left:auto}
   .messages-court-1 .scene-card-time,.messages-court-2 .scene-card-time,.messages-court-3 .scene-card-time,.messages-court-4 .scene-card-time{top:auto;right:auto;bottom:-25%;left:0}
@@ -263,7 +264,7 @@
 }
 @media (max-width: 479px) {
   .benefits-grid { grid-template-columns: 1fr; }.benefit-card { min-height: 0; }
-  .hero-visual { min-height: 410px; }.court-stage{top:12%}.scene-card{min-width:8.2rem;padding:.5rem}.scene-card-confirmed span:first-child{width:1.55rem;height:1.55rem}
+  .hero-visual { min-height: 410px; margin-top: -2.5rem; }.court-stage{top:10%}.scene-card{min-width:8.2rem;padding:.5rem}.scene-card-confirmed span:first-child{width:1.55rem;height:1.55rem}
   .sports-track { gap: .7rem; }.sport-card h3 { font-size: 1rem; }.community-visual { min-height: 20rem; }
 }
 @media (prefers-reduced-motion: reduce) {
