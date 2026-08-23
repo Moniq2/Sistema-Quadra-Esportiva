@@ -42,7 +42,7 @@ describe("API de Reservas - Testes de Regras de Negócio", () => {
     const novaReserva = {
       quadra_id: quadraId,
       responsavel_id: jogadorId,
-      data_reserva: "2026-08-10",
+      data_reserva: "2099-08-10",
       horario_inicio: "14:00",
       horario_fim: "15:00",
       jogadores_ids: [],
@@ -63,7 +63,7 @@ describe("API de Reservas - Testes de Regras de Negócio", () => {
     const reservaConflitante = {
       quadra_id: quadraId,
       responsavel_id: jogadorId,
-      data_reserva: "2026-08-10",
+      data_reserva: "2099-08-10",
       horario_inicio: "14:00",
       horario_fim: "15:00",
       jogadores_ids: [],

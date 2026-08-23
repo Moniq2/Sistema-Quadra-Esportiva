@@ -45,6 +45,21 @@ function converterHorario(horario) {
   return new Date(`1970-01-01T${horario}:00.000Z`);
 }
 
+// Impede criação ou atualização de reservas em datas/horários que já passaram.
+function validarMomentoFuturo(data, horarioInicio) {
+  const agora = new Date();
+  const hoje = [
+    agora.getFullYear(),
+    String(agora.getMonth() + 1).padStart(2, '0'),
+    String(agora.getDate()).padStart(2, '0'),
+  ].join('-');
+  const horarioAtual = `${String(agora.getHours()).padStart(2, '0')}:${String(agora.getMinutes()).padStart(2, '0')}`;
+
+  if (data < hoje || (data === hoje && horarioInicio <= horarioAtual)) {
+    throw criarErro('Não é possível reservar uma data ou horário que já passou.');
+  }
+}
+
 // Remove IDs repetidos e inclui o responsável entre os participantes
 function organizarParticipantes(jogadoresIds, responsavelId) {
   const ids = [
@@ -123,6 +138,7 @@ async function criarReserva(dados) {
     throw criarErro('O ID do responsável é inválido.');
   }
 
+  validarMomentoFuturo(data_reserva, horario_inicio);
   const dataReserva = converterData(data_reserva);
   const horarioInicio = converterHorario(horario_inicio);
   const horarioFim = converterHorario(horario_fim);
@@ -351,6 +367,7 @@ async function atualizarReserva(id, dados) {
     throw criarErro("O ID do responsável é inválido.");
   }
 
+  validarMomentoFuturo(data_reserva, horario_inicio);
   const dataReserva = converterData(data_reserva);
   const horarioInicio = converterHorario(horario_inicio);
   const horarioFim = converterHorario(horario_fim);

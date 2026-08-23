@@ -1,25 +1,27 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { PATHS } from '../routes/paths'
 import api from '../services/api'
 
 export default function QuadrasUsuario() {
+  const navigate = useNavigate()
   const [quadras, setQuadras] = useState([])
   const [filtroModalidade, setFiltroModalidade] = useState('')
   const [filtroLocalizacao, setFiltroLocalizacao] = useState('')
 
   useEffect(() => {
+    async function carregarQuadras() {
+      try {
+        const resposta = await api.get('/quadras')
+        setQuadras(resposta.data)
+      } catch (error) {
+        console.error('Erro ao buscar quadras:', error)
+      }
+    }
+
     carregarQuadras()
   }, [])
 
-  const carregarQuadras = async () => {
-    try {
-      const resposta = await api.get('/quadras')
-      setQuadras(resposta.data)
-    } catch (error) {
-      console.error('Erro ao buscar quadras:', error)
-    }
-  }
-
-  // Remove acentos e converte para minúsculas
   const removerAcentos = (texto) => {
     return (texto || '')
       .normalize('NFD')
@@ -27,88 +29,52 @@ export default function QuadrasUsuario() {
       .toLowerCase()
   }
 
-  // Filtra as quadras em tempo real
-  const quadrasFiltradas = quadras.filter((q) => {
-    const matchModalidade = removerAcentos(q.modalidade).includes(removerAcentos(filtroModalidade))
-    const matchLocalizacao = removerAcentos(q.localizacao).includes(removerAcentos(filtroLocalizacao))
-    return matchModalidade && matchLocalizacao
+  const quadrasFiltradas = quadras.filter((quadra) => {
+    const modalidadeCompativel = removerAcentos(quadra.modalidade).includes(removerAcentos(filtroModalidade))
+    const localizacaoCompativel = removerAcentos(quadra.localizacao).includes(removerAcentos(filtroLocalizacao))
+
+    return modalidadeCompativel && localizacaoCompativel
   })
 
   return (
-    <div className="min-h-screen bg-[#F5FEFE] w-full py-8 px-4 sm:px-6">
-      <div className="max-w-5xl mx-auto space-y-6">
-        
-        {/* Cabeçalho */}
-        <div>
-          <h1 className="text-3xl font-bold text-[#01406D]">Quadras Disponíveis</h1>
-          <p className="text-sm text-gray-500 mt-1">
-            Escolha uma quadra para realizar sua reserva
-          </p>
-        </div>
+    <main className="min-h-screen w-full bg-base-200 px-4 py-8 sm:px-6">
+      <div className="mx-auto max-w-5xl space-y-6">
+        <header>
+          <h1 className="text-3xl font-bold text-primary">Quadras disponíveis</h1>
+          <p className="mt-1 text-sm text-gray-500">Escolha uma quadra para realizar sua reserva.</p>
+        </header>
 
-        {/* Card de Filtros */}
-        <div className="card bg-white shadow-sm border border-gray-200 p-6 rounded-2xl space-y-3">
-          <h2 className="font-bold text-lg text-[#01406D] pb-3 border-b border-gray-100">
-            Filtros
-          </h2>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
-            <div>
-              <label className="text-xs font-semibold text-gray-700 mb-1.5 block">Modalidade</label>
-              <input
-                type="text"
-                placeholder="Ex: Futsal, Tênis"
-                className="input input-bordered w-full h-10 rounded-xl text-xs bg-gray-50 focus:bg-white focus:border-[#01B4BA]"
-                value={filtroModalidade}
-                onChange={(e) => setFiltroModalidade(e.target.value)}
-              />
-            </div>
-
-            <div>
-              <label className="text-xs font-semibold text-gray-700 mb-1.5 block">Localização</label>
-              <input
-                type="text"
-                placeholder="Ex: Brasília, São Paulo"
-                className="input input-bordered w-full h-10 rounded-xl text-xs bg-gray-50 focus:bg-white focus:border-[#01B4BA]"
-                value={filtroLocalizacao}
-                onChange={(e) => setFiltroLocalizacao(e.target.value)}
-              />
-            </div>
+        <section className="card space-y-3 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm" aria-labelledby="filtros-title">
+          <h2 id="filtros-title" className="border-b border-gray-100 pb-3 text-lg font-bold text-primary">Filtros</h2>
+          <div className="grid grid-cols-1 gap-4 pt-1 sm:grid-cols-2">
+            <label className="block text-xs font-semibold text-gray-700">
+              Modalidade
+              <input type="search" placeholder="Ex.: Futsal, tênis" className="input input-bordered mt-1.5 h-10 w-full rounded-xl bg-gray-50 text-xs focus:border-secondary focus:bg-white" value={filtroModalidade} onChange={(event) => setFiltroModalidade(event.target.value)} />
+            </label>
+            <label className="block text-xs font-semibold text-gray-700">
+              Localização
+              <input type="search" placeholder="Ex.: Centro, Aldeota" className="input input-bordered mt-1.5 h-10 w-full rounded-xl bg-gray-50 text-xs focus:border-secondary focus:bg-white" value={filtroLocalizacao} onChange={(event) => setFiltroLocalizacao(event.target.value)} />
+            </label>
           </div>
-        </div>
+        </section>
 
-        {/* Lista de Cards para o Cliente */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {quadrasFiltradas.length > 0 ? (
-            quadrasFiltradas.map((q) => (
-              <div 
-                key={q.id} 
-                className="bg-white border border-gray-200 shadow-sm p-5 rounded-2xl flex flex-col justify-between space-y-4"
-              >
-                <div>
-                  <span className="inline-block bg-[#01B4BA]/10 text-[#01B4BA] text-xs font-bold px-2.5 py-1 rounded-md mb-2">
-                    {q.modalidade}
-                  </span>
-                  <h3 className="font-bold text-xl text-[#01406D]">{q.nome}</h3>
-                  <p className="text-xs text-gray-500 mt-1">📍 {q.localizacao}</p>
-                </div>
-
-                <button 
-                  onClick={() => alert(`Reservar: ${q.nome}`)}
-                  className="btn bg-[#FF7A0F] hover:bg-[#e06900] text-white border-none rounded-xl w-full text-sm font-semibold"
-                >
-                  Reservar Quadra
-                </button>
+        <section className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3" aria-live="polite">
+          {quadrasFiltradas.length > 0 ? quadrasFiltradas.map((quadra) => (
+            <article key={quadra.id} className="flex flex-col justify-between space-y-4 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+              <div>
+                <span className="mb-2 inline-block rounded-md bg-secondary/10 px-2.5 py-1 text-xs font-bold text-secondary">{quadra.modalidade}</span>
+                <h2 className="text-xl font-bold text-primary">{quadra.nome}</h2>
+                <p className="mt-1 text-xs text-gray-500">Local: {quadra.localizacao}</p>
               </div>
-            ))
-          ) : (
-            <p className="text-gray-500 text-sm col-span-full text-center py-10">
-              Nenhuma quadra encontrada com os filtros informados
-            </p>
+              <button type="button" onClick={() => navigate(PATHS.reservas, { state: { quadraIdSelecionada: quadra.id } })} className="btn w-full rounded-xl border-none bg-accent text-sm font-semibold text-white hover:bg-orange-600">
+                Reservar quadra
+              </button>
+            </article>
+          )) : (
+            <p className="col-span-full py-10 text-center text-sm text-gray-500">Nenhuma quadra encontrada com os filtros informados.</p>
           )}
-        </div>
-
+        </section>
       </div>
-    </div>
+    </main>
   )
 }

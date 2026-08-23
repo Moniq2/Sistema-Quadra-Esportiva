@@ -1,12 +1,17 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import api from '../services/api'
+import Toast from '../components/Toast'
 
 export default function Quadras() {
+  const timer = useRef()
   const [quadras, setQuadras] = useState([])
   const [nome, setNome] = useState('')
   const [modalidade, setModalidade] = useState('')
   const [localizacao, setLocalizacao] = useState('')
   const [editingId, setEditingId] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [quadraParaExcluir, setQuadraParaExcluir] = useState(null)
+  const [toast, setToast] = useState({ visible: false, message: '', type: 'success' })
 
   // Filtros de busca
   const [filtroModalidade, setFiltroModalidade] = useState('')
@@ -14,14 +19,24 @@ export default function Quadras() {
 
   useEffect(() => {
     carregarQuadras()
+    return () => clearTimeout(timer.current)
   }, [])
 
-  const carregarQuadras = async () => {
+  const mostrarToast = (message, type = 'success') => {
+    setToast({ visible: true, message, type })
+    clearTimeout(timer.current)
+    timer.current = setTimeout(() => setToast((value) => ({ ...value, visible: false })), 3000)
+  }
+
+  async function carregarQuadras() {
     try {
       const resposta = await api.get('/quadras')
       setQuadras(resposta.data)
     } catch (error) {
       console.error('Erro ao buscar quadras:', error)
+      mostrarToast('Não foi possível carregar as quadras.', 'error')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -36,20 +51,24 @@ export default function Quadras() {
         await api.post('/quadras', dados)
       }
       limparFormulario()
-      carregarQuadras()
+      await carregarQuadras()
+      mostrarToast(editingId ? 'Quadra atualizada.' : 'Quadra cadastrada!')
     } catch (error) {
       console.error('Erro ao salvar quadra:', error)
+      mostrarToast(error.response?.data?.erro || 'Não foi possível salvar a quadra.', 'error')
     }
   }
 
-  const handleDelete = async (id) => {
-    if (confirm('Deseja realmente excluir esta quadra?')) {
-      try {
-        await api.delete(`/quadras/${id}`)
-        carregarQuadras()
-      } catch (error) {
-        console.error('Erro ao deletar quadra:', error)
-      }
+  const handleDelete = async () => {
+    try {
+      await api.delete(`/quadras/${quadraParaExcluir.id}`)
+      setQuadraParaExcluir(null)
+      await carregarQuadras()
+      mostrarToast('Quadra excluída.')
+    } catch (error) {
+      console.error('Erro ao deletar quadra:', error)
+      setQuadraParaExcluir(null)
+      mostrarToast(error.response?.data?.erro || 'Não foi possível excluir. A quadra pode possuir reservas.', 'error')
     }
   }
 
@@ -84,11 +103,9 @@ export default function Quadras() {
   })
 
   return (
-    <div className="min-h-screen bg-[#F5FEFE] w-full py-8 px-4 sm:px-6">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <h1 className="text-center font-bold text-3xl text-[#01406D]">
-          Gerenciamento de Quadras
-        </h1>
+    <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-7 lg:p-10">
+      <div className="w-full space-y-6">
+        <header><p className="text-sm font-bold uppercase tracking-[.18em] text-secondary">Administração</p><h1 className="mt-1 text-3xl font-extrabold text-primary">Gerenciamento de quadras</h1><p className="mt-2 text-slate-500">Cadastre e organize os espaços esportivos disponíveis.</p></header>
 
         {/* 1. Formulário de Cadastro/Edição */}
         <form onSubmit={handleSubmit} className="card bg-white shadow-sm p-6 border border-gray-300 space-y-4 rounded-2xl">
@@ -166,7 +183,7 @@ export default function Quadras() {
 
         {/* 3. Cards de Exibição de Quadras */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {quadrasFiltradas.length > 0 ? (
+          {loading ? <div className="col-span-full grid min-h-40 place-items-center"><span className="loading loading-spinner text-secondary" /></div> : quadrasFiltradas.length > 0 ? (
             quadrasFiltradas.map((q) => (
               <div key={q.id} className="card bg-white border border-gray-300 shadow-sm p-4 rounded-2xl flex flex-row justify-between items-center">
                 <div>
@@ -182,7 +199,7 @@ export default function Quadras() {
                     Editar
                   </button>
                   <button 
-                    onClick={() => handleDelete(q.id)} 
+                    onClick={() => setQuadraParaExcluir(q)}
                     className="btn btn-sm border-[#FF7A0F] text-[#FF7A0F] hover:bg-[#FF7A0F] hover:text-white rounded-lg bg-transparent"
                   >
                     Excluir
@@ -197,6 +214,8 @@ export default function Quadras() {
           )}
         </div>
       </div>
+      {quadraParaExcluir && <div className="modal modal-open" role="dialog" aria-modal="true"><div className="modal-box"><h2 className="text-xl font-bold text-primary">Excluir quadra?</h2><p className="py-4 text-slate-600">Você está prestes a excluir <strong>{quadraParaExcluir.nome}</strong>. Esta ação não poderá ser desfeita.</p><div className="modal-action"><button className="btn btn-ghost" onClick={() => setQuadraParaExcluir(null)}>Voltar</button><button className="btn btn-error text-white" onClick={handleDelete}>Confirmar exclusão</button></div></div><button className="modal-backdrop" aria-label="Fechar" onClick={() => setQuadraParaExcluir(null)} /></div>}
+      <Toast {...toast} />
     </div>
   )
 }
